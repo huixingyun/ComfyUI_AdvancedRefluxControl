@@ -78,9 +78,9 @@ def standardizeMask(mask):
 def crop(img, mask, box, desiredSize):
     (ox,oy,w,h) = box
     if mask is not None:
-        mask=torch.nn.functional.interpolate(mask, size=(h,w), mode="bicubic").view(-1,h,w,1)
+        mask = torch.nn.functional.interpolate(mask, size=(h,w), mode="bicubic")
     img = torch.nn.functional.interpolate(img.transpose(-1,1), size=(w,h), mode="bicubic", antialias=True)
-    return (img[:, :, ox:(desiredSize+ox), oy:(desiredSize+oy)].transpose(1,-1), None if mask == None else mask[:, oy:(desiredSize+oy), ox:(desiredSize+ox),:])
+    return (img[:, :, ox:(desiredSize+ox), oy:(desiredSize+oy)].transpose(1,-1), None if mask is None else mask[:, :, oy:(desiredSize+oy), ox:(desiredSize+ox)])
 
 def letterbox(img, mask, w, h, desiredSize):
     (b,oh,ow,c) = img.shape
@@ -244,7 +244,7 @@ class ReduxAdvanced:
         for t in conditioning:
             n = [torch.cat((t[0], cond), dim=1), t[1].copy()]
             c.append(n)
-        return (c, image, masko.squeeze(-1))
+        return (c, image, None if masko is None else masko.squeeze(1))
 
 
 # A dictionary that contains all nodes you want to export with their names
